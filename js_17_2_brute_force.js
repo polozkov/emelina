@@ -91,10 +91,23 @@ G.F_MULTIFOLD.prototype.f_brute_forse_for_all_legal_moves = function () {
     return data_base;
 };
 
-//ищи кубик 2*2*2
-G.F_MULTIFOLD.prototype.f_search_cube_2_2_2 = function () {
+G.F_MULTIFOLD.prototype.f_search_symmetrical = function () {
     //все допустимые ситуации (с индексом родителя и глубиной)
     let unfiltered_data = this.f_brute_forse_for_all_legal_moves();
+    let filtered_symmmetry = unfiltered_data.filter(d => (d && d.obj.f_get_polycube().f_is_symmetry()));
+
+    //console.log(filtered_symmmetry.map(d => d.obj.f_get_polycube().f_get_sorted().f_get_divided().f_get_string()));
+
+    return filtered_symmmetry.map(d => d.obj)
+};
+
+//ищи кубик 2*2*2
+G.F_MULTIFOLD.prototype.f_search_cube_2_2_2 = function () {
+    //this.f_search_symmetrical();
+
+    //все допустимые ситуации (с индексом родителя и глубиной)
+    let unfiltered_data = this.f_brute_forse_for_all_legal_moves();;
+
     //убедись, что элемент существует (не равен null) и он действительно куб 2*2*2
     let cubes = unfiltered_data.filter(el => (el && el.obj.f_check_is_cube_2_2_2()));
     if (cubes.length === 0) {debugger; return;}

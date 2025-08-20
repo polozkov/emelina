@@ -12,7 +12,9 @@ G.F_MULTIFOLD.prototype.f_get_copy = function () {
 G.AI.MULTIFOLD = {};
 
 //по массиву (массивов из трёх чисел-координат xyz) - создай массив центров (где будут кубы, все координаты чётные)
-G.AI.MULTIFOLD.f_convert_arr_012_to_arr_xyz = (a8 = G.CONST.arr_cubes_centers) => a8.map(v => new G.F_XYZ(v[0], v[1], v[2]));
+//G.AI.MULTIFOLD.f_convert_arr_012_to_arr_xyz = (a8 = G.CONST.arr_cubes_centers) => a8.map(v => new G.F_XYZ(v[0], v[1], v[2]));
+
+G.AI.MULTIFOLD.f_convert_code_to_xyz_array = (str, mult = 2) => G.CONST.f_convert_code_to_012_array(str, mult).map(v => new G.F_XYZ(...v));
 
 //связь между соседними кубиками (петля сложена нулём градусов), mid_face - середина соприкасающихся граней
 G.AI.MULTIFOLD.f_contact_neigbours_fold_0 = function (na, nb, center_a, center_b, mid_face, dir_n6) {
@@ -26,7 +28,7 @@ G.AI.MULTIFOLD.f_contact_neigbours_fold_0 = function (na, nb, center_a, center_b
 G.AI.MULTIFOLD.f_contact_neigbours_fold_180 = function (na, nb, center_a, center_b, mid_face, dir_n6) {
     //середина ребра общая, она равна центру грани, сдвинотому в направлении
     var mid_edge = mid_face.f_op_add(G.CONST.arr_6_directions_xyz[dir_n6]);
-    
+
     //mid_face, mid_face_a - диагональ квадрата. center_a, mid_edge - другая диагональ квадрата 
     var mid_face_a = center_a.f_op_add(mid_edge).f_op_subtract(mid_face);
     var mid_face_b = center_b.f_op_add(mid_edge).f_op_subtract(mid_face);
@@ -36,26 +38,28 @@ G.AI.MULTIFOLD.f_contact_neigbours_fold_180 = function (na, nb, center_a, center
 //кубики касаются по диагонали, известна середина ребра контакта
 G.AI.MULTIFOLD.f_contact_diagonal = function (na, nb, center_a, center_b, mid_edge) {
     //обязательно должно быть направление в направлении +х
-    for (var dir_best of [0,1,2]) //G.CONST.arr_dir_best_for_diagonal_connections)
-    //перебери все 6 вариантов для двух направлениях 
-    for (var ia_dir = 0; ia_dir < 6; ia_dir++)
-    for (var ib_dir = 0; ib_dir < 6; ib_dir++)
-    //хотя бы одно напраление должно совпадать с "обязательным" - то есть к нам, вправо или вверх
-    if ((dir_best === ia_dir) || (dir_best === ib_dir)) {
-        var a_face = center_a.f_op_add(G.CONST.arr_6_directions_xyz[ia_dir]);
-        var b_face = center_b.f_op_add(G.CONST.arr_6_directions_xyz[ib_dir]);
+    for (var dir_best of [0, 1, 2]) //G.CONST.arr_dir_best_for_diagonal_connections)
+        //перебери все 6 вариантов для двух направлениях 
+        for (var ia_dir = 0; ia_dir < 6; ia_dir++)
+            for (var ib_dir = 0; ib_dir < 6; ib_dir++)
+                //хотя бы одно напраление должно совпадать с "обязательным" - то есть к нам, вправо или вверх
+                if ((dir_best === ia_dir) || (dir_best === ib_dir)) {
+                    var a_face = center_a.f_op_add(G.CONST.arr_6_directions_xyz[ia_dir]);
+                    var b_face = center_b.f_op_add(G.CONST.arr_6_directions_xyz[ib_dir]);
 
-        //убедись, что ни одна координата (между центрами граней) не отклоняется больше, чем на единицу
-        //и так ты определи середины граней с полупетлями: a_face, b_face
-        var n_max_must_be_1 = b_face.f_op_delta_max_abs(a_face);
-        if (n_max_must_be_1 === 1)
-            return G.AI.FULL_FOLD.f_create_short(na, nb, center_a, center_b, a_face, b_face, mid_edge, 1);
-    }
+                    //убедись, что ни одна координата (между центрами граней) не отклоняется больше, чем на единицу
+                    //и так ты определи середины граней с полупетлями: a_face, b_face
+                    var n_max_must_be_1 = b_face.f_op_delta_max_abs(a_face);
+                    if (n_max_must_be_1 === 1)
+                        return G.AI.FULL_FOLD.f_create_short(na, nb, center_a, center_b, a_face, b_face, mid_edge, 1);
+                }
 };
 
 //ещё один конструктор - создание с помощью строки с 7 связями
-G.AI.MULTIFOLD.f_multifold_by_string = function (my_string = G.CONST.string_for_task_start, arr_8_centers = G.AI.MULTIFOLD.f_convert_arr_012_to_arr_xyz()) {
+G.AI.MULTIFOLD.f_multifold_by_string = function (my_string = G.CONST.string_for_task_start, code_str_centers = G.CONST.string_code_for_centers) {
+    var arr_8_centers = G.AI.MULTIFOLD.f_convert_code_to_xyz_array(code_str_centers);
     var arr_s7 = my_string.split(" ");
+
 
     //добавь сгиб по номерам двух кубов и букве-связи (где крепить петлю)
     function f_add_fold(na, nb, dir_6_letter) {
@@ -122,7 +126,7 @@ G.F_MULTIFOLD.prototype.f_op_translate = function (v) {
 G.F_MULTIFOLD.prototype.f_get_centers_of_cubes = function (amount_of_cubes = 8) {
     var arr_centers_of_cubes = new Array(amount_of_cubes).fill(null);
     function f_try_add(half_fold) {
-        if (arr_centers_of_cubes[half_fold.index_cube]) {return; }
+        if (arr_centers_of_cubes[half_fold.index_cube]) { return; }
         arr_centers_of_cubes[half_fold.index_cube] = half_fold.center.f_get_copy();
     }
     for (let i_fold of this.arr_folds) {
@@ -130,6 +134,11 @@ G.F_MULTIFOLD.prototype.f_get_centers_of_cubes = function (amount_of_cubes = 8) 
         f_try_add(i_fold.max_fold);
     }
     return arr_centers_of_cubes;
+};
+
+G.F_MULTIFOLD.prototype.f_get_polycube = function () {
+    let arr_centers = this.f_get_centers_of_cubes();
+    return new G.F_POLYCUBE(arr_centers);
 };
 
 //верни ТЕРНАРНЫЙ массив длины 7 (как согнуты петли) 
@@ -142,7 +151,7 @@ G.F_MULTIFOLD.prototype.f_get_active_cubes_in_move = function (child) {
     let old_centers = this.f_get_centers_of_cubes(); //старые центры кубов
     let new_centers = child.f_get_centers_of_cubes(); //новые центры кубов
     //центры кубов не равны
-    let arr8_0_1_flags_cubes_selected = [0,1,2,3,4,5,6,7].map(n => ((old_centers[n].f_is_unequal(new_centers[n])) ? 1 : 0));
+    let arr8_0_1_flags_cubes_selected = [0, 1, 2, 3, 4, 5, 6, 7].map(n => ((old_centers[n].f_is_unequal(new_centers[n])) ? 1 : 0));
     return arr8_0_1_flags_cubes_selected;
 };
 
@@ -150,18 +159,18 @@ G.F_MULTIFOLD.prototype.f_get_active_cubes_in_move = function (child) {
 G.F_MULTIFOLD.prototype.f_comment_move = function (child) {
     let old_centers = this.f_get_centers_of_cubes(); //старые центры кубов
     let new_centers = child.f_get_centers_of_cubes(); //новые центры кубов
-    let arr_i8 = [0,1,2,3,4,5,6,7].filter(n => old_centers[n].f_is_unequal(new_centers[n]));
+    let arr_i8 = [0, 1, 2, 3, 4, 5, 6, 7].filter(n => old_centers[n].f_is_unequal(new_centers[n]));
     let STR_AMOUNT_CUBES = arr_i8.length + "_шт"; //пиши, сколько их штук, которые повернулись (изменили положение)
 
     let old_folds = this.f_get_step_fold_array(); //ТЕРНАРНЫЙ массив of 0..2 - как сложены петли сейчас
     let new_folds = child.f_get_step_fold_array(); //как будут сложены петли у потомка
-    let arr_i7 = [0,1,2,3,4,5,6].filter(n => (old_folds[n] !== new_folds[n])); //петли, которые не совпадают
+    let arr_i7 = [0, 1, 2, 3, 4, 5, 6].filter(n => (old_folds[n] !== new_folds[n])); //петли, которые не совпадают
 
     let old_fold_n012 = new_folds[arr_i7[0]]; //положение начальной (сгибаемой) петли текущее - число 0,1 или 2
     let new_fold_n012 = old_folds[arr_i7[0]]; //положение начальной (сгибаемой) петли у потомка - число 0,1 или 2
     let angle_012 = 0; //на кокой угол произведён ход
     //либо на 90, либо на 180 градусов
-    if (arr_i7.length) {angle_012 = Math.abs(old_fold_n012 - new_fold_n012); };
+    if (arr_i7.length) { angle_012 = Math.abs(old_fold_n012 - new_fold_n012); };
 
     let arr_str_012 = ["на___0", "на__90", "на_180"];
     let STR_ANGLE = arr_str_012[angle_012]; //на столько-то (0,90,180) градусов

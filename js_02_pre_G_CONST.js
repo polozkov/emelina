@@ -1,9 +1,46 @@
+//переводим строку в массив кубов (полику, по кодировке Сергея Полозкова)
+G.CONST.f_convert_code_to_012_array = function (s, mult) {
+	var a = [], i_xyz = [0, 0, 0];
+
+	for (let i = 0; i < s.length; i += 1) {
+		if ('0123456789'.includes(s[i])) {
+			i_xyz[0] = '0123456789'.indexOf(s[i]);
+			a.push(i_xyz.slice());
+		}
+		if (s[i] === ',') {i_xyz = [0, i_xyz[1] + 1, i_xyz[2]]; };
+		if (s[i] === ';') {i_xyz = [0, 0, i_xyz[2] + 1]; };
+	};
+	return a.map(xyz => [xyz[0] * mult, xyz[1] * mult, xyz[2] * mult]);
+};
+//конвертер строк с нумерацией от 1 до 8 -- в нумерация от 0 до 7 и обратно
+G.CONST.f_18_to_07 = (str => str.replace(/[1-8]/g, match => String(Number(match) - 1)));
+G.CONST.f_07_to_18 = (str => str.replace(/[1-8]/g, match => String(Number(match) + 1)));
+
+//когда кубики расположены в виде прямоугольника 4 на 2 - их центры имеют такие координаты
+//G.CONST.arr_cubes_centers = G.CONST.f_convert_code_to_012_array("0123,0123", 2);// [[0,0,0], [2,0,0], [4,0,0], [6,0,0], [0,2,0], [2,2,0], [4,2,0], [6,2,0]];
+
+//КИРПИЧ 4*2*1
+G.CONST.string_code_for_centers = "0123,0123";
+G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z5 2Z3 3Z7 3-8 4X8 5y6 6y7");
+G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z2 2Z3 3-6 6Z7 7Z8 4-7 1X5");
+G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z2 2Z3 3-6 6Z7 7Z8 4-7 5Z6");
+G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z2 2Z3 3-6 6Z7 7Z8 4-7 1x5"); //Деревянная версия КОЖЗ ГСФ8
+G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z5 2Z3 3-8 4X8 3Z7 5y6 6y7"); //Плутон (рыжая и одноцветная) 3д печать
+
+//фиолетовая с упорами - не кирпич от иностранца
+G.CONST.string_code_for_centers = "012,02,01,1";
+G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Y2 2Z3 2-5 1Z4 4Z6 6Z7 7Z8");
+
+G.CONST.string_code_for_centers = "0123,0123";
+G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z2 2Z3 3-6 6Z7 7Z8 4-7 1X5");
+
+
 G.CONST.SYMBOL_ENTER = `
 `;
 
-G.CONST.arr_14_as_7_2 = [[0, "min_fold"], [0, "max_fold"], [1, "min_fold"], [1, "max_fold"],  [2, "min_fold"], [2, "max_fold"],
-[3, "min_fold"], [3, "max_fold"], [4, "min_fold"], [4, "max_fold"], [5, "min_fold"], [5, "max_fold"], [6, "min_fold"], [6, "max_fold"]];
-
+G.CONST.arr_14_as_7_2 = [0,1,2,3,4,5,6,7,8,9,10,11,12,13].map(
+    n => [Math.floor(n/2), ((n % 2) === 0) ? "min_fold" : "max_fold"]);
+    
 //+90, +180, -90, -180
 G.CONST.DEG_P1_P2_M1_M2 = [1, 2, 3, 2];
 
@@ -57,21 +94,8 @@ G.CONST.arr_6_faces = [
     [[-1,-1,-1],[-1,-1,1],[-1,1,1],[-1,1,-1]]
 ];
 
-//конвертер строк с нумерацией от 1 до 8 -- в нумерация от 0 до 7 и обратно
-G.CONST.f_18_to_07 = (str => str.replace(/[1-8]/g, match => String(Number(match) - 1)));
-G.CONST.f_07_to_18 = (str => str.replace(/[1-8]/g, match => String(Number(match) + 1)));
 
-//когда кубики расположены в виде прямоугольника 4 на 2 - их центры имеют такие координаты
-G.CONST.arr_cubes_centers = [[0,0,0], [2,0,0], [4,0,0], [6,0,0], [0,2,0], [2,2,0], [4,2,0], [6,2,0]];
 
-G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z5 2Z3 3Z7 3-8 4X8 5y6 6y7");
-G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z2 2Z3 3-6 6Z7 7Z8 4-7 1X5");
-G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z2 2Z3 3-6 6Z7 7Z8 4-7 5Z6");
-//Деревянная версия КОЖЗ ГСФ8
-//G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z2 2Z3 3-6 6Z7 7Z8 4-7 1x5");
-
-//Плутон (рыжая и одноцветная) 3д печать
-G.CONST.string_for_task_start = G.CONST.f_18_to_07("1Z5 2Z3 3-8 4X8 3Z7 5y6 6y7");
 
 G.CONST.index_of_static_cube = 2;
 
@@ -90,7 +114,7 @@ G.CONST.RGB.arr_8_cubes = [...G.CONST.RGB.arr_7_folds , "#530"];
 G.CONST.RGB.arr_8_cubes_names = [...G.CONST.RGB.arr_7_folds_names,"Дер"].map((s,i) => ((i+1) + s.toUpperCase()[0]));
 
 //выбранные (активные) кубики подсвечивай определённым цветом (а статичные кубики - другим цветом)
-G.CONST.RGB.arr_not_selected_and_selected = ["#FFF", "#999"];
+G.CONST.RGB.arr_not_selected_and_selected = ["none", "#999"];//["#FFF", "#999"];
 
 //обводка для нечётных полупетель (которые соединяются не с "а"-кубиком, а "б"-кубиком, где max_fold)
 G.CONST.RGB.default_fold_stroke_odd_indexes = "#000";
@@ -115,6 +139,5 @@ G.CONST.DEG_ROTATE_X_Y_Z = [-12,-12,0];
 G.CONST.GRID_SHOW_HALF_NX = 2;
 //сколько строк (по вертикали)
 G.CONST.GRID_SHOW_NY = 5;
-
 //число слотов по горизонтали вдвое больше числа ходов
 G.CONST.GRID_SHOW_NX = G.CONST.GRID_SHOW_HALF_NX * 2;

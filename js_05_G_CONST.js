@@ -34,3 +34,16 @@ G.CONST.f_get_direction_index = function (xyz) {
         if (xyz.f_is_equal(G.CONST.arr_6_directions_xyz[i]))
             return i;
 };
+
+function f_arr_mask_of_contacts(arr_legal_len2 = [1,2]) {
+    let arr_result = [];
+    for (let iz of [-1, 0, 1]) for (let iy of [-1, 0, 1]) for (let ix of [-1, 0, 1]) {
+        let p = new G.F_XYZ(ix, iy, iz);
+        if (arr_legal_len2.includes(p.f_get_len2()))
+            arr_result.push(p.f_get_copy());
+    };
+    return arr_result;
+};
+G.CONST.arr_contacts_6 = f_arr_mask_of_contacts([1]);
+G.CONST.arr_contacts_12 = f_arr_mask_of_contacts([2]);
+G.CONST.arr_contacts_18 = f_arr_mask_of_contacts([1,2]);

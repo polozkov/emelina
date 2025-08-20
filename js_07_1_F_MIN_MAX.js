@@ -1,5 +1,5 @@
 //область, ограниченная минимальной и максимальной точкой
-G.F_MIN_MAX = function (min = new G.F_XYZ(Infinity, Infinity, Infinity), max = new G.F_XYZ(-Infinity, -Infinity, -Infinity)) {
+G.F_MIN_MAX = function (min = G.F_NNN(Infinity), max = G.F_NNN(-Infinity)) {
     this.min = min; //min
     this.max = max; //max
 };

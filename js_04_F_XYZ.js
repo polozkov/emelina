@@ -9,6 +9,9 @@ G.F_XYZ.prototype.f_op_multiply = function(p) {return new G.F_XYZ(this.x * p.x, 
 //частное координат точек двух 3д точек (сжать по трём осям)
 G.F_XYZ.prototype.f_op_divide = function(p) {return new G.F_XYZ(this.x / p.x, this.y / p.y, this.z / p.z);};
 
+//сравни текущую точку с точкой b  (для сортировки функцией sort)
+G.F_XYZ.prototype.f_op_compare = function(b) {return ((this.z-b.z) || (this.y-b.y) || (this.x-b.x)); };
+
 //минимальная граница
 G.F_XYZ.prototype.f_op_min = function(p) {return new G.F_XYZ(Math.min(this.x, p.x), Math.min(this.y, p.y), Math.min(this.z, p.z));};
 //максимальная граница
@@ -33,7 +36,7 @@ G.F_XYZ.prototype.f_get_copy = function () {return new G.F_XYZ(this.x, this.y, t
 G.F_XYZ.prototype.f_get_negative = function () {return new G.F_XYZ(-this.x, -this.y, -this.z); };
 
 //квадрат длины от нулевой точки
-G.F_XYZ.prototype.f_get_len2 = function () {return this.x * this.x + this.y * this.y + this.z * this.z; };
+G.F_XYZ.prototype.f_get_len2 = function () {return (this.x * this.x) + (this.y * this.y) + (this.z * this.z); };
 //длина до точки "b" от данной точки
 G.F_XYZ.prototype.f_op_len2 = function (b) {return this.f_op_subtract(b).f_get_len2(); };
 
@@ -85,6 +88,9 @@ G.F_XYZ.prototype.f_op_delta_max_abs = function(b) {return Math.max(Math.abs(thi
 //сравнивай две точки покоординатно
 G.F_XYZ.prototype.f_is_equal = function(b) {return ((this.x === b.x) && (this.y === b.y) && (this.z === b.z)); };
 G.F_XYZ.prototype.f_is_unequal = function(b) {return !((this.x === b.x) && (this.y === b.y) && (this.z === b.z)); };
+
+
+G.F_XYZ.prototype.f_is_order_grow = function() {return (this.x >= this.y)&&(this.y >= this.z); };
 
 G.F_XYZ.prototype.f_is_on_one_axe = function(b) {
     let unique_letter = this.f_get_unique_letter();
@@ -138,3 +144,4 @@ G.F_XYZ.prototype.f_get_edge_end = function(plus_or_minus_one) {
     my_copy[letter] = plus_or_minus_one;
     return my_copy;
 };
+

@@ -125,7 +125,6 @@ G.AI.f_create_3d_array = function(index_0 = 196, index_1 = 196, index_2 = 4, sta
 }());
 
 G.AI.ROTATE.f_is_block_turbo = function(start_x, start_y, on_track_x, on_track_y, degree_step_03_p1_p2_m1_m2 = 0) {
-
     var start_196 = G.AI.ROTATE.f_nx_ny_to_196(start_x, start_y);
     var on_track_196 = G.AI.ROTATE.f_nx_ny_to_196(on_track_x, on_track_y);
     return G.AI.ROTATE.m_196_196[start_196][on_track_196][degree_step_03_p1_p2_m1_m2];

@@ -4,12 +4,17 @@ var G = {
 
     //точка из трёх координат
     F_XYZ: {},
+    //точка с тремя одинаковыми координатами
+    F_NNN: {},
 
     //min-max две ограничивающие 3д точки
     F_MIN_MAX: {},
 
     //три базисных вектора (для матрицы поворота)
     F_M33: {},
+
+    //поликуб - полиформа из кубов (и в более общем - соединение рёбрами) - массив F_XYZ
+    F_POLYCUBE: {},
 
     //массив 3D точек
     F_POLYGON: {}, 
@@ -42,6 +47,8 @@ G.EL.text_info_result = document.getElementById("id_text_info_result");
 G.F_XYZ = function (x=0,y=0,z=0) {
     this.x = x; this.y = y; this.z = z;
 };
+
+G.F_NNN = function (n) {return new G.F_XYZ(n,n,n); };
 
 //матрица поворота 3*3 (по умолчанию матрица с целыми координатами - и единичная)
 G.F_M33 = function (arr_vx = [1,0,0], arr_vy = [0,1,0], arr_vz = [0,0,1]) {
